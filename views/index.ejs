@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Cube timer</title>
+    <style>
+        .content {
+            text-align: center;
+        }
+
+        img:hover {
+            cursor: pointer;
+        }
+
+        button:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <% if (user == null) {%>
+        <button onclick="window.location = '/sign-in'" style="position: absolute; top: 0; right: 0;">Sign in</button>
+    <% } %>
+    <% if (user) {%>
+        <button onclick="signout()" style="position: absolute; top: 0; right: 0;">Sign out</button>
+    <% } %>    
+    <div class="content">
+        <img src="./images/2x2 cube.svg" alt="2x2 cube" width="200px" height="200px" title="2x2" onclick="window.location = '/2x2'">
+        <img src="./images/3x3 cube.svg" alt="3x3 cube" width="200px" height="200px" title="3x3" onclick="window.location = '/3x3'">
+        <!-- <img src="./images/4x4 cube.png" alt="4x4 cube" width="200px" height="200px" title="4x4" /> -->
+    </div>
+
+    <script>
+        function signout() {
+            fetch("/sign-out", {
+                method: 'POST'
+            }).then(res => {
+                if (res.status == 200) {
+                    window.location = "/";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

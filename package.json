@@ -1,0 +1,18 @@
+{
+  "name": "cube-timer",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "firebase": "^9.9.1",
+    "scrambled": "^1.0.2"
+  }
+}

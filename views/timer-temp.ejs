@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cube timer</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <div class="sidenav">
+        <div onclick="dd()" class="selection"><p><%= event %></p></div>
+        <div id="dd-content" class="dd-content">
+            <% subEvents.forEach(sub => {%>
+                <a href="<%= sub.link %>"><%= sub.title %></a>
+            <%})%>
+        </div>
+        <p>hi</p>
+        <div class="stats">
+            <div class="item1">
+                PB
+                <br>
+                3.46
+            </div>
+            <div class="item2">
+                AO5
+                <br>
+                3.46
+            </div>
+            <div class="item3">
+                AO12
+                <br>
+                3.46
+            </div>
+            <div class="item4">
+                AO100
+                <br>
+                3.46
+            </div>
+        </div>
+    </div>
+
+    <div class="scramble">
+        <h1><%= scramble.scramble %></h1>
+        <img style="position: absolute; bottom: 0%; right: 0%;" width="200px" height="200px" src="<%= scrambleImg %>" alt="scramble img" />
+    </div>
+
+    <div id="timer" class="timer" onclick="alert('click')">
+        <p id="time">0.00</p>
+    </div>
+
+    <div id="uid" class="<%= user %>" style="display: none;"></div>
+
+    <script src="./app.js" defer></script>
+</body>
+</html>

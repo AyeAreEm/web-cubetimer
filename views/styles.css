@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+html, * {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background: #323232;
+}
+
+button {
+    background: #661428;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 100px;
+    height: 50px;
+}
+
+.creds {
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background: #661428;
+    color: white;
+    height: 40%;
+    width: 40%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+form {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); 
+    width: inherit;
+}
+
+form input[type=email]  {
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 15px;
+    height: 20px;
+    margin-top: 10%;
+}
+
+form input[type=password] {
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 15px;
+    height: 20px;
+}
+
+form input[type=submit] {
+    width: 30%;
+    height: 2rem;
+    border: none;
+    border-radius: 5px;
+}
+
+.sidenav {
+    background: #D9D9D9;
+    float: left;
+    height: 100vh;
+    width: 350px;
+    resize: horizontal;
+    overflow: scroll;
+}
+
+.item1 { grid-area: topleft; }
+.item2 { grid-area: topright; }
+.item3 { grid-area: bottomleft; }
+.item4 { grid-area: bottomright; }
+
+.stats {
+    background: #661428;
+    bottom: 0%;
+    position: absolute;
+    width: inherit;
+    height: 150px;
+    overflow: hidden;
+    display: grid;
+    grid-template-areas:
+    'topleft topright'
+    'bottomleft bottomright ';
+    gap: 10px;
+}
+
+.stats > div {
+    text-align: center;
+    font-size: 20px;
+    color: white;
+}
+
+.scramble {
+    text-align: center;
+    color: white;
+    height: 40px;
+    border-bottom: 2px solid black;
+}
+
+.timer p {
+    color: white;
+    font-size: 5rem;
+    text-align: center;
+    height: 95vh;
+    line-height: 95vh;
+}
+
+.selection {
+    font-size: 35px;
+    height: 40px;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    border-bottom: 2px solid black;
+}
+
+.selection:hover {
+    cursor: pointer;
+}
+
+.dd-content {
+    width: inherit;
+    font-size: 30px;
+    text-align: center;
+    display: none;
+    position: absolute;
+    background-color: #A4A4A4;
+    overflow: auto;
+    z-index: 1;
+}
+
+a {
+    width: 100%;
+    color: black;
+    text-decoration: none;
+    display: block;
+}
+
+.show {
+    display: block;
+}
+
