@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Cube Timer - Reset Password</title>
+</head>
+<body>
+    <div class="creds">
+        <form>
+            <h2>Reset Password</h2>
+            <input id="email" type="email" placeholder="enter email..." required /><br><br>
+            <input type="submit" />
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("submit", e => {
+            e.preventDefault();
+
+            let email = document.getElementById("email").value;
+            let data = {email}
+
+            fetch("/reset-password", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)}
+            ).then(res => {
+                if (res.status == 200) {
+                    alert("check email to reset password");
+                } else if (res.status == 400) {
+                    alert("there was an error. check that you input the correct email");
+                } else {
+                    console.log("error")
+                }
+            })
+        })
+    </script>
+</body>
+</html>

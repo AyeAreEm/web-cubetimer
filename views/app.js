@@ -21,7 +21,8 @@ window.addEventListener("keyup", e => {
         displayTime.textContent = time;
 
         let uid = document.getElementById("uid").className;
-        let data = {uid, time}
+        let scramble = document.getElementById("scramble").textContent;
+        let data = {uid, scramble, time}
 
         fetch(`${window.location.pathname}`, {
             method: 'POST',
