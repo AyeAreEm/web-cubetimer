@@ -18,14 +18,6 @@ const firebaseConfig = {
 const fbapp = initializeApp(firebaseConfig);
 const auth = getAuth(fbapp);
 const db = getFirestore(fbapp);
-// const docRef = doc(db, "3x3 pll", "felix");
-// const docSnapshot = await getDoc(docRef);
-
-// if (docSnapshot.exists()) {
-//     console.log(docSnapshot.data());
-// } else {
-//     console.log("no doc")
-// }
 
 let uid;
 onAuthStateChanged(auth, (acc) => {
@@ -34,10 +26,16 @@ onAuthStateChanged(auth, (acc) => {
     }
 })
 
+// const uploadToDb = (uid, event) => {
+//     setDoc(doc(db, `solves/${uid}/${uid}${event}`, ""))
+// }
+
+
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('views'));
-app.use(express.json({ limit: '10Mb'}))
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
 app.get("/", (req, res) => {
     res.render("index", {
@@ -172,9 +170,9 @@ app.post("/sign-up", (req, res) => {
                     yperm: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
                     zperm: "M2 U M2 U M' U2 M2 U2 M'"
                 }),
-                setDoc(doc(db, `solves/${userUid}/${userUid}2`, "init"), {}),
-                setDoc(doc(db, `solves/${userUid}/${userUid}3`, "init"), {}),
-                setDoc(doc(db, `solves/${userUid}/${userUid}4`, "init"), {}),
+                setDoc(doc(db, "2x2 solves", userUid), {}),
+                setDoc(doc(db, "3x3 solves", userUid), {}),
+                setDoc(doc(db, "4x4 solves", userUid), {}),
             ]).catch(error => {
                 console.log(error)
                 res.sendStatus(500)
@@ -189,9 +187,7 @@ app.post("/sign-up", (req, res) => {
     })
 })
 
-app.get("/reset-password", (req, res) => {
-    res.render("reset");
-})
+app.get("/reset-password", (req, res) => res.render("reset"));
 
 app.post("/reset-password", (req, res) => {
     sendPasswordResetEmail(auth, req.body.email)
@@ -224,15 +220,40 @@ app.get("/2x2", (req, res) => {
     } else {
         let scramble = generateScrambleSync(11, 2);
         res.render("timer-temp", {
+            user: uid,
             event: "2x2",
             subEvents: [{title: "2x2 PLL", link: "/2x2/alg/pll"}, {title: "2x2 OLL", link: "/2x2/alg/oll"}],
             scramble: scramble,
-            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=2&alg=${scramble.scramble}`
+            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`
         });
     }
 })
 
+app.get("/2x2/upload/:uid/:scramble/:time", (req, res) => {
+    // console.log(req.params.uid);
+    // console.log(req.params.time);
+    // console.log(req.params.scramble);
+
+    let scramble = generateScrambleSync(11, 2);
+    res.send({
+        scramble: scramble.scramble,
+        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`
+    });
+
+});
+
 app.get("/3x3", (req, res) => {
+    let firstSolve;
+
+    const docSnapshot = getDoc(doc(db, "3x3 solves", uid));
+    docSnapshot.then(snapshot => {
+        if (snapshot.exists() && Object.keys(docSnapshot.data()).length === 0) firstSolve = true
+        else if (snapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) firstSolve = false
+        else console.log(error)
+    }).catch(error => {
+        console.log(error);
+    })
+
     if (uid == undefined) {
         res.redirect("/sign-in")
     } else {
@@ -242,17 +263,23 @@ app.get("/3x3", (req, res) => {
             event: "3x3",
             subEvents: [{title: "3x3 PLL", link: "/3x3/alg/pll"}, {title: "3x3 OLL", link: "/3x3/alg/oll"}],
             scramble: scramble,
-            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&alg=${scramble.scramble}`
+            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`,
+            firstSolve
         });
     }
 })
 
-app.post("/3x3", (req, res) => {
-    console.log(req.body.time);
-    console.log(req.body.uid)
-    console.log(req.body.scramble)
+app.get("/3x3/upload/:uid/:scramble/:time", (req, res) => {
+    // console.log(req.params.uid);
+    // console.log(req.params.time);
+    // console.log(req.params.scramble);
 
-    res.sendStatus(200)
+    let scramble = generateScrambleSync(20, 3);
+    res.send({
+        scramble: scramble.scramble,
+        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`
+    });
+
 });
 
 const port = process.env.PORT || 5000;

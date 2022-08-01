@@ -21,20 +21,20 @@ window.addEventListener("keyup", e => {
         displayTime.textContent = time;
 
         let uid = document.getElementById("uid").className;
-        let scramble = document.getElementById("scramble").textContent;
-        let data = {uid, scramble, time}
+        let scramble = document.getElementById("scramble");
+        let scrambleImg = document.getElementById("scrambleImg");
 
-        fetch(`${window.location.pathname}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(res => {
-            console.log(res);
+        fetch(`${window.location.pathname}/upload/${uid}/${scramble.textContent}/${time}`)
+        .then(res => {
+            res.json().then(result => {
+                console.log(result.scramble);
+                console.log(result.scrambleImg);
+
+                scramble.textContent = result.scramble;
+                scrambleImg.src = result.scrambleImg;
+            })
         });
 
-        // location.reload();
     }
 })
 
