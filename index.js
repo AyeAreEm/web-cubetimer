@@ -214,19 +214,31 @@ app.post("/sign-out", (req, res) => {
 
 //! Cube Related Routes
 
-app.get("/2x2", (req, res) => {
+app.get("/2x2", async (req, res) => {
     if (uid == undefined) {
-        res.redirect("/sign-in")
-    } else {
-        let scramble = generateScrambleSync(11, 2);
-        res.render("timer-temp", {
-            user: uid,
-            event: "2x2",
-            subEvents: [{title: "2x2 PLL", link: "/2x2/alg/pll"}, {title: "2x2 OLL", link: "/2x2/alg/oll"}],
-            scramble: scramble,
-            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`
-        });
+        return res.redirect("/sign-in")
     }
+    
+    let solves = [];
+    const docSnapshot = await getDoc(doc(db, "2x2 solves", uid));
+    
+    if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) { //* has data
+        solves.push(docSnapshot.data());
+    } else if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length === 0) { //* empty
+        solves = null;
+    } else {
+        console.log("no doc")
+    }
+
+    let scramble = generateScrambleSync(11, 2);
+    res.render("timer-temp", {
+        user: uid,
+        event: "2x2",
+        subEvents: [{title: "2x2 PLL", link: "/2x2/alg/pll"}, {title: "2x2 OLL", link: "/2x2/alg/oll"}],
+        scramble: scramble,
+        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`,
+        solves
+    });
 })
 
 app.get("/2x2/upload/:uid/:scramble/:time", (req, res) => {
@@ -237,36 +249,36 @@ app.get("/2x2/upload/:uid/:scramble/:time", (req, res) => {
     let scramble = generateScrambleSync(11, 2);
     res.send({
         scramble: scramble.scramble,
-        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`
+        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`
     });
 
 });
 
-app.get("/3x3", (req, res) => {
-    let firstSolve;
-
-    const docSnapshot = getDoc(doc(db, "3x3 solves", uid));
-    docSnapshot.then(snapshot => {
-        if (snapshot.exists() && Object.keys(docSnapshot.data()).length === 0) firstSolve = true
-        else if (snapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) firstSolve = false
-        else console.log(error)
-    }).catch(error => {
-        console.log(error);
-    })
-
+app.get("/3x3", async (req, res) => {
     if (uid == undefined) {
-        res.redirect("/sign-in")
-    } else {
-        let scramble = generateScrambleSync(20, 3);
-        res.render("timer-temp", {
-            user: uid,
-            event: "3x3",
-            subEvents: [{title: "3x3 PLL", link: "/3x3/alg/pll"}, {title: "3x3 OLL", link: "/3x3/alg/oll"}],
-            scramble: scramble,
-            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`,
-            firstSolve
-        });
+        return res.redirect("/sign-in")
     }
+    
+    let solves = [];
+    const docSnapshot = await getDoc(doc(db, "3x3 solves", uid));
+    
+    if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) { //* has data
+        solves.push(docSnapshot.data());
+    } else if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length === 0) { //* empty
+        solves = null;
+    } else {
+        console.log("no doc")
+    }
+
+    let scramble = generateScrambleSync(20, 3);
+    res.render("timer-temp", {
+        user: uid,
+        event: "3x3",
+        subEvents: [{title: "3x3 PLL", link: "/3x3/alg/pll"}, {title: "3x3 OLL", link: "/3x3/alg/oll"}],
+        scramble: scramble,
+        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`,
+        solves
+    });
 })
 
 app.get("/3x3/upload/:uid/:scramble/:time", (req, res) => {
@@ -277,7 +289,7 @@ app.get("/3x3/upload/:uid/:scramble/:time", (req, res) => {
     let scramble = generateScrambleSync(20, 3);
     res.send({
         scramble: scramble.scramble,
-        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=png&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`
+        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`
     });
 
 });

@@ -2,7 +2,7 @@
 
 html, * {
     margin: 0;
-    padding: 0;
+    /* padding: 0; */
     font-family: 'Roboto', sans-serif;
 }
 
@@ -17,6 +17,10 @@ button {
     border-radius: 5px;
     width: 100px;
     height: 50px;
+}
+
+button:hover {
+    cursor: pointer;
 }
 
 .creds {
@@ -71,11 +75,34 @@ form input[type=submit] {
 .sidenav {
     background: #D9D9D9;
     float: left;
-    height: 100vh;
+    height: 85vh;
     width: 350px;
-    resize: horizontal;
     overflow: scroll;
 }
+
+.previous  {
+    text-align: center;
+    border-bottom: 2px solid black;
+    border-collapse: collapse;
+}
+
+.previous p {
+    font-size: 30px;
+    border-collapse: collapse;
+
+}
+
+.previous .number {
+    float: left;
+    border-right: 2px solid black;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-collapse: collapse;
+}
+
+/* .previous .solve .time {
+
+} */
 
 .item1 { grid-area: topleft; }
 .item2 { grid-area: topright; }
@@ -87,7 +114,7 @@ form input[type=submit] {
     bottom: 0%;
     position: absolute;
     width: inherit;
-    height: 150px;
+    height: 15vh;
     overflow: hidden;
     display: grid;
     grid-template-areas:
