@@ -20,21 +20,40 @@ window.addEventListener("keyup", e => {
         displayTime.style.color = "white";
         displayTime.textContent = time;
 
-        let uid = document.getElementById("uid").className;
         let scramble = document.getElementById("scramble");
         let scrambleImg = document.getElementById("scrambleImg");
+        let prevScram = document.getElementById('prevScram');
+        let numSolve = parseInt(prevScram.firstElementChild.id) + 1;
+        let data = {scramble: scramble.textContent, time, numSolve}
 
-        fetch(`${window.location.pathname}/upload/${uid}/${scramble.textContent}/${time}`)
-        .then(res => {
+        let div = document.createElement("div")
+        div.className = "previous"
+        div.id = numSolve;
+
+        let numberP = document.createElement("p")
+        numberP.textContent = numSolve;
+        numberP.className = "number";
+        div.appendChild(numberP)
+
+        let timeP = document.createElement("p");
+        timeP.textContent = time;
+        div.appendChild(timeP)
+
+        prevScram.insertBefore(div, prevScram.firstElementChild);
+
+        fetch(`${window.location.pathname}`, {
+            method: "post",
+            headers: {
+                "Accept": "application/json, text/plan, */*",
+                'Content-Type': "application/json"    
+            },
+            body: JSON.stringify(data)
+        }).then(res => {
             res.json().then(result => {
-                console.log(result.scramble);
-                console.log(result.scrambleImg);
-
                 scramble.textContent = result.scramble;
                 scrambleImg.src = result.scrambleImg;
             })
-        });
-
+        })
     }
 })
 

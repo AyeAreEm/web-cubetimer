@@ -15,15 +15,16 @@
                 <a href="<%= sub.link %>"><%= sub.title %></a>
             <%})%>  
         </div>
-        <div>
+        <div id="prevScram">
             <% if (solves != null) { %>
-                <% solves.forEach((solve, index) => {%>
-                    <% for (let i in solve) {%>
+                <% solves.forEach(solve => {%>
+                    <% let reversedSolve = Object.keys(solve).reverse()%>
+                    <% reversedSolve.forEach(i => {%>
                         <div id="<%= i %>" class="previous">
                             <p class="number"><%= i %></p>
                             <p><%= solve[i].time%></p>
                         </div>
-                    <%}%>
+                    <% }) %>
                 <% }) %>
             <% }%>
         </div>
@@ -59,8 +60,6 @@
     <div id="timer" class="timer">
         <p id="time">0.00</p>
     </div>
-
-    <div id="uid" class="<%= user %>" style="display: none;"></div>
 
     <script src="./app.js" defer></script>
 </body>

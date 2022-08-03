@@ -3,7 +3,7 @@ import { generateScrambleSync } from "scrambled";
 
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, setPersistence, browserLocalPersistence, sendPasswordResetEmail } from "firebase/auth";
-import { getFirestore, collection, getDocs, query, where, getDoc, doc, setDoc, addDoc} from "firebase/firestore";
+import { getFirestore, getDoc, doc, setDoc, updateDoc} from "firebase/firestore";
 
 const app = express();
 const firebaseConfig = {
@@ -26,9 +26,20 @@ onAuthStateChanged(auth, (acc) => {
     }
 })
 
-// const uploadToDb = (uid, event) => {
-//     setDoc(doc(db, `solves/${uid}/${uid}${event}`, ""))
-// }
+const uploadToDb = async (uid, event, num, scramble, time) => {
+    // setDoc(doc(db, "3x3 solves", userUid), {}),
+
+    let upload = await updateDoc(doc(db, event, uid), {
+      [num]: {scramble, time}
+    })
+    
+    if (upload) {
+        return true
+    } else {
+        return false
+    }
+
+}
 
 
 app.set('views', './views');
@@ -281,18 +292,17 @@ app.get("/3x3", async (req, res) => {
     });
 })
 
-app.get("/3x3/upload/:uid/:scramble/:time", (req, res) => {
-    // console.log(req.params.uid);
-    // console.log(req.params.time);
-    // console.log(req.params.scramble);
-
-    let scramble = generateScrambleSync(20, 3);
-    res.send({
-        scramble: scramble.scramble,
-        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`
-    });
-
-});
+app.post("/3x3", async (req, res) => {
+    let upload = await uploadToDb(uid, "3x3 solves", req.body.numSolve, req.body.scramble, req.body.time);
+    
+    if (upload) {
+        let scramble = generateScrambleSync(20, 3);
+        res.send({
+            scramble: scramble.scramble,
+            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`,
+        });
+    }
+})
 
 const port = process.env.PORT || 5000;
 app.listen(port);
