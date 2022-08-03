@@ -4,7 +4,7 @@ function dd() {
 
 let start;
 let pressed = false;
-let displayTime = document.getElementById("time");
+const displayTime = document.getElementById("time");
 
 window.addEventListener("keyup", e => {
     if (e.key == " " && !pressed) {
@@ -14,16 +14,16 @@ window.addEventListener("keyup", e => {
     }
 
     else if (e.key == " " && pressed) {
-        let end = Date.now();
-        let time = Math.round((((end - start) / 1000 ) + Number.EPSILON) * 100) / 100;
+        const end = Date.now();
+        const time = Math.round((((end - start) / 1000 ) + Number.EPSILON) * 100) / 100;
 
         pressed = false;
         displayTime.style.color = "white";
         displayTime.textContent = time;
 
-        let scramble = document.getElementById("scramble");
-        let scrambleImg = document.getElementById("scrambleImg");
-        let prevScram = document.getElementById('prevScram');
+        const scramble = document.getElementById("scramble");
+        const scrambleImg = document.getElementById("scrambleImg");
+        const prevScram = document.getElementById('prevScram');
         let numSolve;
 
         if (prevScram.firstElementChild == null) {
@@ -32,18 +32,18 @@ window.addEventListener("keyup", e => {
             numSolve = parseInt(prevScram.firstElementChild.id) + 1;
         }
 
-        let data = {scramble: scramble.textContent, time, numSolve}
+        const data = {scramble: scramble.textContent, time, numSolve}
 
-        let div = document.createElement("div")
+        const div = document.createElement("div")
         div.className = "previous"
         div.id = numSolve;
 
-        let numberP = document.createElement("p")
+        const numberP = document.createElement("p")
         numberP.textContent = numSolve;
         numberP.className = "number";
         div.appendChild(numberP)
 
-        let timeP = document.createElement("p");
+        const timeP = document.createElement("p");
         timeP.textContent = time;
         div.appendChild(timeP)
 
