@@ -33,7 +33,7 @@ const uploadToDb = async (uid, event, num, scramble, time) => {
       [num]: {scramble, time}
     })
     
-    if (upload) {
+    if (upload == undefined) {
         return true
     } else {
         return false
@@ -252,18 +252,17 @@ app.get("/2x2", async (req, res) => {
     });
 })
 
-app.get("/2x2/upload/:uid/:scramble/:time", (req, res) => {
-    // console.log(req.params.uid);
-    // console.log(req.params.time);
-    // console.log(req.params.scramble);
-
-    let scramble = generateScrambleSync(11, 2);
-    res.send({
-        scramble: scramble.scramble,
-        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`
-    });
-
-});
+app.post("/2x2", async (req, res) => {
+    let upload = await uploadToDb(uid, "2x2 solves", req.body.numSolve, req.body.scramble, req.body.time);
+    
+    if (upload) {
+        let scramble = generateScrambleSync(11, 2);
+        res.send({
+            scramble: scramble.scramble,
+            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`,
+        });
+    }
+})
 
 app.get("/3x3", async (req, res) => {
     if (uid == undefined) {
@@ -294,12 +293,51 @@ app.get("/3x3", async (req, res) => {
 
 app.post("/3x3", async (req, res) => {
     let upload = await uploadToDb(uid, "3x3 solves", req.body.numSolve, req.body.scramble, req.body.time);
-    
+
     if (upload) {
         let scramble = generateScrambleSync(20, 3);
         res.send({
             scramble: scramble.scramble,
             scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`,
+        });
+    }
+})
+
+app.get("/4x4", async (req, res) => {
+    if (uid == undefined) {
+        return res.redirect("/sign-in")
+    }
+    
+    let solves = [];
+    const docSnapshot = await getDoc(doc(db, "4x4 solves", uid));
+    
+    if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) { //* has data
+        solves.push(docSnapshot.data());
+    } else if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length === 0) { //* empty
+        solves = null;
+    } else {
+        console.log("no doc")
+    }
+
+    let scramble = generateScrambleSync(30, 4);
+    res.render("timer-temp", {
+        user: uid,
+        event: "4x4",
+        subEvents: [{title: "4x4 PLL", link: "/4x4/alg/pll"}, {title: "4x4 OLL", link: "/4x4/alg/oll"}],
+        scramble: scramble,
+        scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=4&bg=t&alg=x2${scramble.scramble}`,
+        solves
+    });
+})
+
+app.post("/4x4", async (req, res) => {
+    let upload = await uploadToDb(uid, "4x4 solves", req.body.numSolve, req.body.scramble, req.body.time);
+
+    if (upload) {
+        let scramble = generateScrambleSync(30, 4);
+        res.send({
+            scramble: scramble.scramble,
+            scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=4&bg=t&alg=x2${scramble.scramble}`,
         });
     }
 })

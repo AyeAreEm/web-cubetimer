@@ -15,7 +15,8 @@ window.addEventListener("keyup", e => {
 
     else if (e.key == " " && pressed) {
         let end = Date.now();
-        let time = (end - start) / 1000;
+        let time = Math.round((((end - start) / 1000 ) + Number.EPSILON) * 100) / 100;
+
         pressed = false;
         displayTime.style.color = "white";
         displayTime.textContent = time;
@@ -23,7 +24,14 @@ window.addEventListener("keyup", e => {
         let scramble = document.getElementById("scramble");
         let scrambleImg = document.getElementById("scrambleImg");
         let prevScram = document.getElementById('prevScram');
-        let numSolve = parseInt(prevScram.firstElementChild.id) + 1;
+        let numSolve;
+
+        if (prevScram.firstElementChild == null) {
+            numSolve = 1;
+        } else if (prevScram.firstElementChild.id) {
+            numSolve = parseInt(prevScram.firstElementChild.id) + 1;
+        }
+
         let data = {scramble: scramble.textContent, time, numSolve}
 
         let div = document.createElement("div")

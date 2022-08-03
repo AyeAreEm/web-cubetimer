@@ -3,4 +3,4 @@
 
 ## TODO:
     - get all algs and then load them in the timer temp
-    - on finished solve, upload scramble and time to firestore
+    - calculate ao5, ao12 and ao100. maybe save pb to localstorage
