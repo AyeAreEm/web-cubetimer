@@ -69,16 +69,20 @@ app.post("/sign-in", (req, res) => {
     setPersistence(auth, browserLocalPersistence)
         .then(() => {
             signInWithEmailAndPassword(auth, req.body.email, req.body.password)
-                .then(() => {
+                .then(_userCreds => {
                     // uid = userCreds.user.uid;
                     res.sendStatus(200);
                 })
-                .catch(error => {
-                    res.send(error);
+                .catch(_error => {
+                    res.sendStatus(500)
                 });
         })
         .catch(error => {
-            res.send(error);
+            if (error.code == "auth/email-already-in-use") {
+                res.sendStatus(501);
+            } else if (error.code == "auth/wrong-password") {
+                res.sendStatus(502);
+            }
 
         })
 })
