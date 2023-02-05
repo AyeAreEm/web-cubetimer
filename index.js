@@ -31,7 +31,7 @@ onAuthStateChanged(auth, (acc) => {
 const uploadToDb = async (uid, event, num, scramble, time) => {
     // setDoc(doc(db, "3x3 solves", userUid), {}),
 
-    let upload = await updateDoc(doc(db, event, uid), {
+    const upload = await updateDoc(doc(db, event, uid), {
       [num]: {scramble, time}
     })
     
@@ -136,7 +136,7 @@ app.use(express.static('views'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
     res.render("index", {
         user: uid
     });
@@ -144,7 +144,7 @@ app.get("/", (req, res) => {
 
 //! User Related Routes 
 
-app.get("/sign-in", (req, res) => {
+app.get("/sign-in", (_req, res) => {
     res.render("credentials", {
         logType: "sign-in",
         title: "Sign In",
@@ -157,20 +157,25 @@ app.post("/sign-in", (req, res) => {
     setPersistence(auth, browserLocalPersistence)
         .then(() => {
             signInWithEmailAndPassword(auth, req.body.email, req.body.password)
-                .then(userCreds => {
+                .then(_userCreds => {
                     // uid = userCreds.user.uid;
                     res.sendStatus(200);
                 })
-                .catch(error => {
+                .catch(_error => {
                     res.sendStatus(500)
                 });
         })
         .catch(error => {
-            res.sendStatus(500);
+            if (error.code == "auth/email-already-in-use") {
+                res.sendStatus(501);
+            } else if (error.code == "auth/wrong-password") {
+                res.sendStatus(502);
+            }
+
         })
 })
 
-app.get("/sign-up", (req, res) => {
+app.get("/sign-up", (_req, res) => {
     res.render("credentials", {
         logType: "sign-up",
         title: "Sign Up",
@@ -281,12 +286,12 @@ app.post("/sign-up", (req, res) => {
             console.log(error);
             res.sendStatus(400);
         });
-    }).catch(error => {
+    }).catch(_error => {
         res.sendStatus(500)
     })
 })
 
-app.get("/reset-password", (req, res) => res.render("reset"));
+app.get("/reset-password", (_req, res) => res.render("reset"));
 
 app.post("/reset-password", (req, res) => {
     sendPasswordResetEmail(auth, req.body.email)
@@ -301,7 +306,7 @@ app.post("/reset-password", (req, res) => {
         }))
 })
 
-app.post("/sign-out", (req, res) => {
+app.post("/sign-out", (_req, res) => {
     signOut(auth).then(() => {
         uid = undefined;
         res.sendStatus(200)
@@ -313,14 +318,14 @@ app.post("/sign-out", (req, res) => {
 
 //! Cube Related Routes
 
-app.get("/2x2", async (req, res) => {
+app.get("/2x2", async (_req, res) => {
     if (uid == undefined) {
         return res.redirect("/sign-in")
     }
     
     const [solves, pb, avgFive, avgTwelve, avgHundo] = await getStats("2x2 solves");
 
-    let scramble = generateScrambleSync(11, 2);
+    const scramble = generateScrambleSync(11, 2);
     res.render("timer-temp", {
         user: uid,
         event: "2x2",
@@ -336,10 +341,10 @@ app.get("/2x2", async (req, res) => {
 })
 
 app.post("/2x2", async (req, res) => {
-    let upload = await uploadToDb(uid, "2x2 solves", req.body.numSolve, req.body.scramble, req.body.time);
+    const upload = await uploadToDb(uid, "2x2 solves", req.body.numSolve, req.body.scramble, req.body.time);
     
     if (upload) {
-        let scramble = generateScrambleSync(11, 2);
+        const scramble = generateScrambleSync(11, 2);
         res.send({
             scramble: scramble.scramble,
             scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`,
@@ -347,15 +352,14 @@ app.post("/2x2", async (req, res) => {
     }
 })
 
-app.get("/3x3", async (req, res) => {
+app.get("/3x3", async (_req, res) => {
     if (uid == undefined) {
         return res.redirect("/sign-in")
     }
     
     const [solves, pb, avgFive, avgTwelve, avgHundo] = await getStats("3x3 solves");
 
-    let scramble = generateScrambleSync(20, 3);
-
+    const scramble = generateScrambleSync(20, 3);
     res.render("timer-temp", {
         user: uid,
         event: "3x3",
@@ -371,10 +375,10 @@ app.get("/3x3", async (req, res) => {
 })
 
 app.post("/3x3", async (req, res) => {
-    let upload = await uploadToDb(uid, "3x3 solves", req.body.numSolve, req.body.scramble, req.body.time);
+    const upload = await uploadToDb(uid, "3x3 solves", req.body.numSolve, req.body.scramble, req.body.time);
 
     if (upload) {
-        let scramble = generateScrambleSync(20, 3);
+        const scramble = generateScrambleSync(20, 3);
         res.send({
             scramble: scramble.scramble,
             scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`,
@@ -382,14 +386,14 @@ app.post("/3x3", async (req, res) => {
     }
 })
 
-app.get("/4x4", async (req, res) => {
+app.get("/4x4", async (_req, res) => {
     if (uid == undefined) {
         return res.redirect("/sign-in")
     }
     
     const [solves, pb, avgFive, avgTwelve, avgHundo] = await getStats("4x4 solves");
 
-    let scramble = generateScrambleSync(30, 4);
+    const scramble = generateScrambleSync(30, 4);
     res.render("timer-temp", {
         user: uid,
         event: "4x4",
@@ -405,10 +409,10 @@ app.get("/4x4", async (req, res) => {
 })
 
 app.post("/4x4", async (req, res) => {
-    let upload = await uploadToDb(uid, "4x4 solves", req.body.numSolve, req.body.scramble, req.body.time);
+    const upload = await uploadToDb(uid, "4x4 solves", req.body.numSolve, req.body.scramble, req.body.time);
 
     if (upload) {
-        let scramble = generateScrambleSync(30, 4);
+        const scramble = generateScrambleSync(30, 4);
         res.send({
             scramble: scramble.scramble,
             scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=4&bg=t&alg=x2${scramble.scramble}`,
