@@ -26,6 +26,8 @@ onAuthStateChanged(auth, (acc) => {
     }
 })
 
+//! Functions (besides routes)
+
 const uploadToDb = async (uid, event, num, scramble, time) => {
     // setDoc(doc(db, "3x3 solves", userUid), {}),
 
@@ -41,6 +43,92 @@ const uploadToDb = async (uid, event, num, scramble, time) => {
 
 }
 
+//* function to get pb, averages from the time of solves
+const getStats = async (event) => {
+    let solves = []; // array of objects
+    let times = []; // array of numbers
+    let pb; // int
+    let avgFive;
+    let avgTwelve;
+    let avgHundo;
+
+
+    const docSnapshot = await getDoc(doc(db, event, uid));
+
+    if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) { //* has data
+        solves.push(docSnapshot.data());
+
+        solves.forEach(solve => {
+            let solveObj = Object.keys(solve);
+            solveObj.forEach(i => {
+                times.push(solve[i].time)
+            })
+
+        })
+
+        pb = Math.min(...times)
+
+        const [five, twelve, hundo] = getAverage(times);
+        avgFive = five;
+        avgTwelve = twelve;
+        avgHundo = hundo;
+    } else if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length === 0) { //* empty
+        solves = null;
+        pb = null;
+
+        const [five, twelve, hundo] = [null, null, null];
+        avgFive = five;
+        avgTwelve = twelve;
+        avgHundo = hundo;
+    } else {
+        console.log("no doc")
+        pb = null;
+        
+        const [five, twelve, hundo] = [null, null, null];
+        avgFive = five;
+        avgTwelve = twelve;
+        avgHundo = hundo;
+    }
+
+    return [solves, pb, avgFive, avgTwelve, avgHundo];
+}
+
+const getAverage = (arr) => {
+    let hundo, twelve, five;
+
+    if (arr.length >= 99) {
+        hundo = average(arr, -100);
+        twelve = average(arr, -12);
+        five = average(arr, -5);
+    } else if (arr.length >= 11) {
+        hundo = null;
+        twelve = average(arr, -12);
+        five = average(arr, -5);
+    } else if (arr.length >= 4) {
+        hundo = null;
+        twelve = null;
+        five = average(arr, -5);
+    } else {
+        hundo = null;
+        twelve = null;
+        five = null;
+    }
+
+    return [five, twelve, hundo];
+}
+
+const average = (arr, range) => {
+
+    let sum = 0;
+
+    arr.slice(range).forEach(num => {
+        sum += num;
+    });
+
+    range *= -1;
+    
+    return (Math.round(((sum / range) + Number.EPSILON) * 100) / 100);
+}
 
 app.set('views', './views');
 app.set('view engine', 'ejs');
@@ -230,16 +318,7 @@ app.get("/2x2", async (req, res) => {
         return res.redirect("/sign-in")
     }
     
-    let solves = [];
-    const docSnapshot = await getDoc(doc(db, "2x2 solves", uid));
-    
-    if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) { //* has data
-        solves.push(docSnapshot.data());
-    } else if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length === 0) { //* empty
-        solves = null;
-    } else {
-        console.log("no doc")
-    }
+    const [solves, pb, avgFive, avgTwelve, avgHundo] = await getStats("2x2 solves");
 
     let scramble = generateScrambleSync(11, 2);
     res.render("timer-temp", {
@@ -248,7 +327,11 @@ app.get("/2x2", async (req, res) => {
         subEvents: [{title: "2x2 PLL", link: "/2x2/alg/pll"}, {title: "2x2 OLL", link: "/2x2/alg/oll"}],
         scramble: scramble,
         scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=2&bg=t&alg=x2${scramble.scramble}`,
-        solves
+        solves,
+        pb,
+        avgFive,
+        avgTwelve,
+        avgHundo
     });
 })
 
@@ -269,25 +352,21 @@ app.get("/3x3", async (req, res) => {
         return res.redirect("/sign-in")
     }
     
-    let solves = [];
-    const docSnapshot = await getDoc(doc(db, "3x3 solves", uid));
-    
-    if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) { //* has data
-        solves.push(docSnapshot.data());
-    } else if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length === 0) { //* empty
-        solves = null;
-    } else {
-        console.log("no doc")
-    }
+    const [solves, pb, avgFive, avgTwelve, avgHundo] = await getStats("3x3 solves");
 
     let scramble = generateScrambleSync(20, 3);
+
     res.render("timer-temp", {
         user: uid,
         event: "3x3",
         subEvents: [{title: "3x3 PLL", link: "/3x3/alg/pll"}, {title: "3x3 OLL", link: "/3x3/alg/oll"}],
         scramble: scramble,
         scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=3&bg=t&alg=x2${scramble.scramble}`,
-        solves
+        solves,
+        pb,
+        avgFive,
+        avgTwelve,
+        avgHundo
     });
 })
 
@@ -308,16 +387,7 @@ app.get("/4x4", async (req, res) => {
         return res.redirect("/sign-in")
     }
     
-    let solves = [];
-    const docSnapshot = await getDoc(doc(db, "4x4 solves", uid));
-    
-    if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length !== 0) { //* has data
-        solves.push(docSnapshot.data());
-    } else if (docSnapshot.exists() && Object.keys(docSnapshot.data()).length === 0) { //* empty
-        solves = null;
-    } else {
-        console.log("no doc")
-    }
+    const [solves, pb, avgFive, avgTwelve, avgHundo] = await getStats("4x4 solves");
 
     let scramble = generateScrambleSync(30, 4);
     res.render("timer-temp", {
@@ -326,7 +396,11 @@ app.get("/4x4", async (req, res) => {
         subEvents: [{title: "4x4 PLL", link: "/4x4/alg/pll"}, {title: "4x4 OLL", link: "/4x4/alg/oll"}],
         scramble: scramble,
         scrambleImg: `http://cube.rider.biz/visualcube.php?fmt=svg&size=150&pzl=4&bg=t&alg=x2${scramble.scramble}`,
-        solves
+        solves,
+        pb,
+        avgFive,
+        avgTwelve,
+        avgHundo
     });
 })
 

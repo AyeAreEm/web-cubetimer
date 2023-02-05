@@ -12,7 +12,7 @@
         <div onclick="dd()" class="selection"><p><%= event %></p></div>
         <div id="dd-content" class="dd-content">
             <% subEvents.forEach(sub => {%>
-                <a href="<%= sub.link %>"><%= sub.title %></a>
+                <a class="dd" href="<%= sub.link %>"><%= sub.title %></a>
             <%})%>  
         </div>
         <div id="prevScram">
@@ -32,22 +32,38 @@
             <div class="item1">
                 PB
                 <br>
-                3.46
+                <% if (pb) { %>
+                    <p><%= pb %></p>
+                <% } else { %>
+                    <p>-</p>
+                <% } %>
             </div>
             <div class="item2">
                 AO5
                 <br>
-                3.46
+                <% if (avgFive) { %>
+                    <p><%= avgFive %></p>
+                <% } else { %>
+                    <p>-</p>
+                <% } %>
             </div>
             <div class="item3">
                 AO12
                 <br>
-                3.46
+                <% if (avgTwelve) { %>
+                    <p><%= avgTwelve %></p>
+                <% } else { %>
+                    <p>-</p>
+                <% } %>
             </div>
             <div class="item4">
                 AO100
                 <br>
-                -
+                <% if (avgHundo) { %>
+                    <p><%= avgHundo %></p>
+                <% } else { %>
+                    <p>-</p>
+                <% } %>
             </div>
         </div>
     </div>
